@@ -1,6 +1,6 @@
 package com.example.hurynovich.template_filler.converter.impl;
 
-import com.example.hurynovich.template_filler.converter.TemplateRequestConverter;
+import com.example.hurynovich.template_filler.converter.TemplateApiConverter;
 import com.example.hurynovich.template_filler.dto.TemplateDto;
 import com.example.hurynovich.template_filler.request.CreateTemplateRequest;
 import com.example.hurynovich.template_filler.request.UpdateTemplateRequest;
@@ -8,7 +8,7 @@ import com.example.hurynovich.template_filler.response.TemplateResponse;
 import org.springframework.stereotype.Service;
 
 @Service
-public class BaseTemplateRequestConverter implements TemplateRequestConverter {
+public class BaseTemplateApiConverter implements TemplateApiConverter {
 
     @Override
     public TemplateDto convert(final CreateTemplateRequest source) {

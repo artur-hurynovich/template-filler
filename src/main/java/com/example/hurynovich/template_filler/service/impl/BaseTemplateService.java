@@ -1,6 +1,6 @@
 package com.example.hurynovich.template_filler.service.impl;
 
-import com.example.hurynovich.template_filler.converter.TemplateDtoConverter;
+import com.example.hurynovich.template_filler.converter.TemplateServiceConverter;
 import com.example.hurynovich.template_filler.dto.TemplateDto;
 import com.example.hurynovich.template_filler.repository.TemplateRepository;
 import com.example.hurynovich.template_filler.service.PlaceholderKeyService;
@@ -14,13 +14,13 @@ import java.util.List;
 @Transactional
 public class BaseTemplateService implements TemplateService {
 
-    private final TemplateDtoConverter converter;
+    private final TemplateServiceConverter converter;
 
     private final TemplateRepository repository;
 
     private final PlaceholderKeyService placeholderKeyService;
 
-    public BaseTemplateService(final TemplateDtoConverter converter,
+    public BaseTemplateService(final TemplateServiceConverter converter,
             final TemplateRepository repository,
             final PlaceholderKeyService placeholderKeyService) {
         this.converter = converter;

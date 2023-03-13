@@ -1,6 +1,6 @@
 package com.example.hurynovich.template_filler.service.impl;
 
-import com.example.hurynovich.template_filler.converter.PlaceholderKeyDtoConverter;
+import com.example.hurynovich.template_filler.converter.PlaceholderKeyServiceConverter;
 import com.example.hurynovich.template_filler.dto.PlaceholderKeyDto;
 import com.example.hurynovich.template_filler.dto.TemplateDto;
 import com.example.hurynovich.template_filler.repository.PlaceholderKeyRepository;
@@ -15,13 +15,13 @@ import java.util.List;
 @Transactional
 public class BasePlaceholderKeyService implements PlaceholderKeyService {
 
-    private final PlaceholderKeyDtoConverter converter;
+    private final PlaceholderKeyServiceConverter converter;
 
     private final PlaceholderKeyRepository repository;
 
     private final PlaceholderKeyExtractor extractor;
 
-    public BasePlaceholderKeyService(final PlaceholderKeyDtoConverter converter,
+    public BasePlaceholderKeyService(final PlaceholderKeyServiceConverter converter,
             final PlaceholderKeyRepository repository,
             final PlaceholderKeyExtractor extractor) {
         this.converter = converter;

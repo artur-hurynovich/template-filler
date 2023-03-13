@@ -5,7 +5,7 @@ import com.example.hurynovich.template_filler.request.CreateTemplateRequest;
 import com.example.hurynovich.template_filler.request.UpdateTemplateRequest;
 import com.example.hurynovich.template_filler.response.TemplateResponse;
 
-public interface TemplateRequestConverter {
+public interface TemplateApiConverter {
 
     TemplateDto convert(CreateTemplateRequest source);
 

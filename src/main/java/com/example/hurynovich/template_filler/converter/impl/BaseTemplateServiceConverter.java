@@ -1,12 +1,12 @@
 package com.example.hurynovich.template_filler.converter.impl;
 
-import com.example.hurynovich.template_filler.converter.TemplateDtoConverter;
+import com.example.hurynovich.template_filler.converter.TemplateServiceConverter;
 import com.example.hurynovich.template_filler.dto.TemplateDto;
 import com.example.hurynovich.template_filler.entity.TemplateEntity;
 import org.springframework.stereotype.Service;
 
 @Service
-public class BaseTemplateDtoConverter implements TemplateDtoConverter {
+public class BaseTemplateServiceConverter implements TemplateServiceConverter {
 
     @Override
     public TemplateEntity convert(final TemplateDto source) {

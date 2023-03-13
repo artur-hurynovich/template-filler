@@ -5,7 +5,7 @@ import com.example.hurynovich.template_filler.response.PlaceholderKeyResponse;
 
 import java.util.List;
 
-public interface PlaceholderKeyResponseConverter {
+public interface PlaceholderKeyApiConverter {
 
     PlaceholderKeyResponse convert(List<PlaceholderKeyDto> placeholderKeyDtoList);
 }
