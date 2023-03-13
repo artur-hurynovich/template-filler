@@ -25,8 +25,8 @@ public class PlaceholderKeyEntity {
 
     }
 
-    public PlaceholderKeyEntity(final Long id, final String placeholderKey, final Long templateId) {
-        this.id = id;
+    public PlaceholderKeyEntity(final String placeholderKey, final Long templateId) {
+        this.id = null;
         this.placeholderKey = placeholderKey;
         this.templateId = templateId;
     }
