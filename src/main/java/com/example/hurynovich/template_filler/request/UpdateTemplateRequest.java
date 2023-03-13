@@ -4,7 +4,7 @@ public class UpdateTemplateRequest extends AbstractTemplateRequest {
 
     private final Long id;
 
-    public UpdateTemplateRequest(final String name, final String payload, final Long id) {
+    public UpdateTemplateRequest(final Long id, final String name, final String payload) {
         super(name, payload);
 
         this.id = id;
