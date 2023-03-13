@@ -21,7 +21,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @RestController
-@RequestMapping("/templates")
+@RequestMapping("/v1/templates")
 public class TemplateController {
 
     private final TemplateApiConverter converter;

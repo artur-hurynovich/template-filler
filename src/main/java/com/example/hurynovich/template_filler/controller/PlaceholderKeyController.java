@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/placeholder-keys")
+@RequestMapping("/v1/placeholder-keys")
 public class PlaceholderKeyController {
 
     private final PlaceholderKeyService service;
