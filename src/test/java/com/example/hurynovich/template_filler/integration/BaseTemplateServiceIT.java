@@ -23,7 +23,6 @@ import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TE
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @TestPropertySource("/application-test.properties")
-//@Sql(scripts = "/integration/db-scripts/common/clear.sql", executionPhase = AFTER_TEST_METHOD)
 class BaseTemplateServiceIT {
 
     private static final String TEMPLATE_NAME = "test template name";
@@ -56,7 +55,7 @@ class BaseTemplateServiceIT {
 
     @Test
     @Sql(scripts = "/integration/db-scripts/common/clear.sql", executionPhase = AFTER_TEST_METHOD)
-    void given_templateDto_when_save_then_returnTemplateDto() {
+    void given_newTemplateDto_when_save_then_returnTemplateDto() {
         final var originalTemplateDto = new TemplateDto(null, TEMPLATE_NAME, TEMPLATE_PAYLOAD);
         final var actualTemplateDto = service.save(originalTemplateDto);
 

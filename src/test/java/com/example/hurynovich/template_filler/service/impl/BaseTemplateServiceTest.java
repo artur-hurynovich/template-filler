@@ -42,9 +42,29 @@ class BaseTemplateServiceTest {
     private BaseTemplateService service;
 
     @Test
-    void given_templateDto_when_save_then_returnTemplateDto() {
+    void given_newTemplateDto_when_save_then_returnTemplateDto() {
+        final var templateDto = new TemplateDto(null, TEMPLATE_NAME_1, TEMPLATE_PAYLOAD_1);
+        final var templateEntity = new TemplateEntity(ID_1, TEMPLATE_NAME_1, TEMPLATE_PAYLOAD_1);
+        final var persistedTemplateDto = new TemplateDto(ID_1, TEMPLATE_NAME_1, TEMPLATE_PAYLOAD_1);
+        when(converter.convert(templateDto)).thenReturn(templateEntity);
+        when(repository.save(templateEntity)).thenReturn(templateEntity);
+        when(converter.convert(templateEntity)).thenReturn(persistedTemplateDto);
+        doNothing()
+                .when(placeholderKeyService)
+                .extractPlaceholderKeysAndSave(persistedTemplateDto);
+
+        final var actualTemplateDto = service.save(templateDto);
+
+        assertEquals(persistedTemplateDto, actualTemplateDto);
+    }
+
+    @Test
+    void given_existingTemplateDto_when_save_then_returnTemplateDto() {
         final var templateDto = new TemplateDto(ID_1, TEMPLATE_NAME_1, TEMPLATE_PAYLOAD_1);
         final var templateEntity = new TemplateEntity(ID_1, TEMPLATE_NAME_1, TEMPLATE_PAYLOAD_1);
+        doNothing()
+                .when(placeholderKeyService)
+                .deleteAllByTemplateId(ID_1);
         when(converter.convert(templateDto)).thenReturn(templateEntity);
         when(repository.save(templateEntity)).thenReturn(templateEntity);
         when(converter.convert(templateEntity)).thenReturn(templateDto);

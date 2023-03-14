@@ -30,6 +30,11 @@ public class BaseTemplateService implements TemplateService {
 
     @Override
     public TemplateDto save(final TemplateDto templateDto) {
+        final Long id = templateDto.id();
+        if (id != null) {
+            placeholderKeyService.deleteAllByTemplateId(id);
+        }
+
         final var persistedTemplateDto = converter.convert(repository.save(converter.convert(templateDto)));
 
         placeholderKeyService.extractPlaceholderKeysAndSave(persistedTemplateDto);
