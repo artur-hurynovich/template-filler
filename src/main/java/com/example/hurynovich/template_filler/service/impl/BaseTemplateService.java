@@ -3,7 +3,7 @@ package com.example.hurynovich.template_filler.service.impl;
 import com.example.hurynovich.template_filler.converter.TemplateServiceConverter;
 import com.example.hurynovich.template_filler.dto.TemplateDto;
 import com.example.hurynovich.template_filler.repository.TemplateRepository;
-import com.example.hurynovich.template_filler.service.PlaceholderKeyService;
+import com.example.hurynovich.template_filler.service.PlaceholderKeyExtractor;
 import com.example.hurynovich.template_filler.service.TemplateService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,28 +18,20 @@ public class BaseTemplateService implements TemplateService {
 
     private final TemplateRepository repository;
 
-    private final PlaceholderKeyService placeholderKeyService;
+    private final PlaceholderKeyExtractor extractor;
 
-    public BaseTemplateService(final TemplateServiceConverter converter,
-            final TemplateRepository repository,
-            final PlaceholderKeyService placeholderKeyService) {
+    public BaseTemplateService(final TemplateServiceConverter converter, final TemplateRepository repository,
+                               final PlaceholderKeyExtractor extractor) {
         this.converter = converter;
         this.repository = repository;
-        this.placeholderKeyService = placeholderKeyService;
+        this.extractor = extractor;
     }
 
     @Override
     public TemplateDto save(final TemplateDto templateDto) {
-        final Long id = templateDto.id();
-        if (id != null) {
-            placeholderKeyService.deleteAllByTemplateId(id);
-        }
+        final var placeholderKeys = extractor.extract(templateDto.payload());
 
-        final var persistedTemplateDto = converter.convert(repository.save(converter.convert(templateDto)));
-
-        placeholderKeyService.extractPlaceholderKeysAndSave(persistedTemplateDto);
-
-        return persistedTemplateDto;
+        return converter.convert(repository.save(converter.convert(templateDto, placeholderKeys)));
     }
 
     @Override
@@ -63,8 +55,6 @@ public class BaseTemplateService implements TemplateService {
 
     @Override
     public void deleteById(final Long id) {
-        placeholderKeyService.deleteAllByTemplateId(id);
-
         repository.deleteById(id);
     }
 }

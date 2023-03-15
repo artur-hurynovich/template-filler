@@ -9,12 +9,15 @@ import org.springframework.stereotype.Service;
 public class BasePlaceholderKeyServiceConverter implements PlaceholderKeyServiceConverter {
 
     @Override
-    public PlaceholderKeyEntity convert(final String placeholderKey, final Long templateId) {
-        return new PlaceholderKeyEntity(placeholderKey, templateId);
+    public PlaceholderKeyEntity convert(final String placeholderKey) {
+        final var placeholderKeyEntity = new PlaceholderKeyEntity();
+        placeholderKeyEntity.setPlaceholderKey(placeholderKey);
+
+        return placeholderKeyEntity;
     }
 
     @Override
     public PlaceholderKeyDto convert(final PlaceholderKeyEntity source) {
-        return new PlaceholderKeyDto(source.getId(), source.getPlaceholderKey(), source.getTemplateId());
+        return new PlaceholderKeyDto(source.getId(), source.getPlaceholderKey());
     }
 }

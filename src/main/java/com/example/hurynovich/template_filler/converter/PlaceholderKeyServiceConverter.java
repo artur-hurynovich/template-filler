@@ -5,7 +5,7 @@ import com.example.hurynovich.template_filler.entity.PlaceholderKeyEntity;
 
 public interface PlaceholderKeyServiceConverter {
 
-    PlaceholderKeyEntity convert(String placeholderKey, Long templateId);
+    PlaceholderKeyEntity convert(String placeholderKey);
 
     PlaceholderKeyDto convert(PlaceholderKeyEntity source);
 }

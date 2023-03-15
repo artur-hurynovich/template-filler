@@ -27,7 +27,8 @@ public class BasePlaceholderKeyExtractor implements PlaceholderKeyExtractor {
 
         while (matcher.find()) {
             final var group = matcher.group();
-            placeholderKeys.add(group.substring(PLACEHOLDER_PREFIX_LENGTH, group.length() - PLACEHOLDER_POSTFIX_LENGTH));
+            placeholderKeys.add(
+                    group.substring(PLACEHOLDER_PREFIX_LENGTH, group.length() - PLACEHOLDER_POSTFIX_LENGTH));
         }
 
         return unmodifiableList(placeholderKeys);

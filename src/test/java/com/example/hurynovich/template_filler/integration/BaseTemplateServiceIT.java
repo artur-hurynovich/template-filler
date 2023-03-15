@@ -16,7 +16,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static java.util.List.of;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 
@@ -57,6 +60,7 @@ class BaseTemplateServiceIT {
     @Sql(scripts = "/integration/db-scripts/common/clear.sql", executionPhase = AFTER_TEST_METHOD)
     void given_newTemplateDto_when_save_then_returnTemplateDto() {
         final var originalTemplateDto = new TemplateDto(null, TEMPLATE_NAME, TEMPLATE_PAYLOAD);
+
         final var actualTemplateDto = service.save(originalTemplateDto);
 
         assertThat(actualTemplateDto)
@@ -69,6 +73,28 @@ class BaseTemplateServiceIT {
         assertTrue(templateRepository.existsById(id));
 
         final var placeholderKeyEntities = placeholderKeyRepository.findAllByTemplateId(id);
+        assertFalse(placeholderKeyEntities.isEmpty());
+        assertEquals(2, placeholderKeyEntities.size());
+        assertTrue(placeholderKeyEntities
+                .stream()
+                .map(PlaceholderKeyEntity::getPlaceholderKey)
+                .toList()
+                .containsAll(of(PLACEHOLDER_KEY_1, PLACEHOLDER_KEY_2)));
+    }
+
+    @Test
+    @SqlGroup({@Sql(scripts = "/integration/db-scripts/templates/insert-template.sql",
+            executionPhase = BEFORE_TEST_METHOD), @Sql(scripts = "/integration/db-scripts/common/clear.sql",
+            executionPhase = AFTER_TEST_METHOD)})
+    void given_existingTemplateDto_when_save_then_returnTemplateDto() {
+        final var originalTemplateDto = new TemplateDto(TEMPLATE_ID_1, TEMPLATE_NAME, TEMPLATE_PAYLOAD);
+
+        final var actualTemplateDto = service.save(originalTemplateDto);
+
+        assertEquals(originalTemplateDto, actualTemplateDto);
+        assertTrue(templateRepository.existsById(TEMPLATE_ID_1));
+
+        final var placeholderKeyEntities = placeholderKeyRepository.findAllByTemplateId(TEMPLATE_ID_1);
         assertFalse(placeholderKeyEntities.isEmpty());
         assertEquals(2, placeholderKeyEntities.size());
         assertTrue(placeholderKeyEntities

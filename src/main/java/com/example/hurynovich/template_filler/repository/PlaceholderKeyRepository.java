@@ -8,6 +8,4 @@ import java.util.List;
 public interface PlaceholderKeyRepository extends JpaRepository<PlaceholderKeyEntity, Long> {
 
     List<PlaceholderKeyEntity> findAllByTemplateId(Long templateId);
-
-    void deleteAllByTemplateId(Long templateId);
 }

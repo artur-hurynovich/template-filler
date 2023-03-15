@@ -3,9 +3,14 @@ package com.example.hurynovich.template_filler.entity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.GenerationType.SEQUENCE;
 
 @Entity
@@ -21,15 +26,8 @@ public class TemplateEntity {
 
     private String payload;
 
-    public TemplateEntity() {
-
-    }
-
-    public TemplateEntity(final Long id, final String name, final String payload) {
-        this.id = id;
-        this.name = name;
-        this.payload = payload;
-    }
+    @OneToMany(mappedBy = "template", cascade = ALL, orphanRemoval = true)
+    private List<PlaceholderKeyEntity> placeholderKeys = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -53,5 +51,19 @@ public class TemplateEntity {
 
     public void setPayload(final String payload) {
         this.payload = payload;
+    }
+
+    public List<PlaceholderKeyEntity> getPlaceholderKeys() {
+        return placeholderKeys;
+    }
+
+    public void setPlaceholderKeys(final List<PlaceholderKeyEntity> placeholderKeys) {
+        this.placeholderKeys = placeholderKeys;
+    }
+
+    public void addPlaceholderKey(final PlaceholderKeyEntity placeholderKey) {
+        placeholderKey.setTemplate(this);
+
+        placeholderKeys.add(placeholderKey);
     }
 }
