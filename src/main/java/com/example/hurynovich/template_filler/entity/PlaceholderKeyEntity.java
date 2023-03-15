@@ -3,9 +3,12 @@ package com.example.hurynovich.template_filler.entity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
+import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.SEQUENCE;
 
 @Entity
@@ -19,17 +22,9 @@ public class PlaceholderKeyEntity {
 
     private String placeholderKey;
 
-    private Long templateId;
-
-    public PlaceholderKeyEntity() {
-
-    }
-
-    public PlaceholderKeyEntity(final String placeholderKey, final Long templateId) {
-        this.id = null;
-        this.placeholderKey = placeholderKey;
-        this.templateId = templateId;
-    }
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "template_id", nullable = false)
+    private TemplateEntity template;
 
     public Long getId() {
         return id;
@@ -47,11 +42,11 @@ public class PlaceholderKeyEntity {
         this.placeholderKey = placeholderKey;
     }
 
-    public Long getTemplateId() {
-        return templateId;
+    public TemplateEntity getTemplate() {
+        return template;
     }
 
-    public void setTemplateId(final Long templateId) {
-        this.templateId = templateId;
+    public void setTemplate(final TemplateEntity template) {
+        this.template = template;
     }
 }

@@ -16,8 +16,7 @@ public class PlaceholderKeyController {
 
     private final PlaceholderKeyApiConverter converter;
 
-    public PlaceholderKeyController(final PlaceholderKeyService service,
-            final PlaceholderKeyApiConverter converter) {
+    public PlaceholderKeyController(final PlaceholderKeyService service, final PlaceholderKeyApiConverter converter) {
         this.service = service;
         this.converter = converter;
     }

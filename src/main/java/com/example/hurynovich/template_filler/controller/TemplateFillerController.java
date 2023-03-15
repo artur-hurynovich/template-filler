@@ -17,8 +17,7 @@ public class TemplateFillerController {
 
     private final TemplateFillerApiConverter converter;
 
-    public TemplateFillerController(final TemplateFiller filler,
-            final TemplateFillerApiConverter converter) {
+    public TemplateFillerController(final TemplateFiller filler, final TemplateFillerApiConverter converter) {
         this.filler = filler;
         this.converter = converter;
     }

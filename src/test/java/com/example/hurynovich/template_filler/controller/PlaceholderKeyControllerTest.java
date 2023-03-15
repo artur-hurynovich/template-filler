@@ -51,8 +51,8 @@ class PlaceholderKeyControllerTest {
 
     @Test
     void given_templateId_when_getByTemplateId_then_returnPlaceholderKeyResponse() throws Exception {
-        final var placeholderKeyDto1 = new PlaceholderKeyDto(PLACEHOLDER_KEY_ID_1, PLACEHOLDER_KEY_1, TEMPLATE_ID);
-        final var placeholderKeyDto2 = new PlaceholderKeyDto(PLACEHOLDER_KEY_ID_2, PLACEHOLDER_KEY_2, TEMPLATE_ID);
+        final var placeholderKeyDto1 = new PlaceholderKeyDto(PLACEHOLDER_KEY_ID_1, PLACEHOLDER_KEY_1);
+        final var placeholderKeyDto2 = new PlaceholderKeyDto(PLACEHOLDER_KEY_ID_2, PLACEHOLDER_KEY_2);
         final var placeholderKeyDtoList = of(placeholderKeyDto1, placeholderKeyDto2);
         final var placeholderKeyResponse = new PlaceholderKeyResponse(of(PLACEHOLDER_KEY_1, PLACEHOLDER_KEY_2));
         when(service.findAllByTemplateId(TEMPLATE_ID)).thenReturn(placeholderKeyDtoList);

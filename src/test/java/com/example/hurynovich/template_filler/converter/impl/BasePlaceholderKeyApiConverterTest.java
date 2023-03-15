@@ -16,15 +16,12 @@ class BasePlaceholderKeyApiConverterTest {
     private static final String PLACEHOLDER_KEY_1 = "test placeholder key 1";
     private static final String PLACEHOLDER_KEY_2 = "test placeholder key 2";
 
-    private static final Long TEMPLATE_ID_1 = 1358L;
-    private static final Long TEMPLATE_ID_2 = 1359L;
-
     private final PlaceholderKeyApiConverter converter = new BasePlaceholderKeyApiConverter();
 
     @Test
     void given_placeholderKeyDtoList_when_convert_then_returnPlaceholderKeyResponse() {
-        final var placeholderKeyDto1 = new PlaceholderKeyDto(ID_1, PLACEHOLDER_KEY_1, TEMPLATE_ID_1);
-        final var placeholderKeyDto2 = new PlaceholderKeyDto(ID_2, PLACEHOLDER_KEY_2, TEMPLATE_ID_2);
+        final var placeholderKeyDto1 = new PlaceholderKeyDto(ID_1, PLACEHOLDER_KEY_1);
+        final var placeholderKeyDto2 = new PlaceholderKeyDto(ID_2, PLACEHOLDER_KEY_2);
         final var expectedPlaceholderKeyResponse = new PlaceholderKeyResponse(of(PLACEHOLDER_KEY_1, PLACEHOLDER_KEY_2));
 
         final var actualPlaceholderKeyResponse = converter.convert(of(placeholderKeyDto1, placeholderKeyDto2));

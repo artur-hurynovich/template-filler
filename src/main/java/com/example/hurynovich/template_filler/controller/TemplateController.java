@@ -28,8 +28,7 @@ public class TemplateController {
 
     private final TemplateService service;
 
-    public TemplateController(final TemplateApiConverter converter,
-            final TemplateService service) {
+    public TemplateController(final TemplateApiConverter converter, final TemplateService service) {
         this.converter = converter;
         this.service = service;
     }
