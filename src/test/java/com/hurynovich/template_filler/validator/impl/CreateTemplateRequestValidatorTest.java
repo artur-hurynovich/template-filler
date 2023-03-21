@@ -4,10 +4,9 @@ import com.hurynovich.template_filler.request.CreateTemplateRequest;
 import com.hurynovich.template_filler.validator.Validator;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
 import static com.hurynovich.template_filler.validator.model.ValidationResult.failure;
 import static com.hurynovich.template_filler.validator.model.ValidationResult.success;
+import static java.util.List.of;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.SPACE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,7 +34,7 @@ class CreateTemplateRequestValidatorTest {
     @Test
     void given_nullNameCreateTemplateRequest_when_validate_then_returnSuccess() {
         final var request = new CreateTemplateRequest(null, PAYLOAD);
-        final var expectedValidationResult = failure(List.of(NON_VALID_NAME_MSG));
+        final var expectedValidationResult = failure(of(NON_VALID_NAME_MSG));
 
         final var actualValidationResult = validator.validate(request);
 
@@ -45,7 +44,7 @@ class CreateTemplateRequestValidatorTest {
     @Test
     void given_emptyNameCreateTemplateRequest_when_validate_then_returnSuccess() {
         final var request = new CreateTemplateRequest(EMPTY, PAYLOAD);
-        final var expectedValidationResult = failure(List.of(NON_VALID_NAME_MSG));
+        final var expectedValidationResult = failure(of(NON_VALID_NAME_MSG));
 
         final var actualValidationResult = validator.validate(request);
 
@@ -55,7 +54,7 @@ class CreateTemplateRequestValidatorTest {
     @Test
     void given_blankNameCreateTemplateRequest_when_validate_then_returnSuccess() {
         final var request = new CreateTemplateRequest(SPACE, PAYLOAD);
-        final var expectedValidationResult = failure(List.of(NON_VALID_NAME_MSG));
+        final var expectedValidationResult = failure(of(NON_VALID_NAME_MSG));
 
         final var actualValidationResult = validator.validate(request);
 
@@ -65,7 +64,7 @@ class CreateTemplateRequestValidatorTest {
     @Test
     void given_nullPayloadCreateTemplateRequest_when_validate_then_returnSuccess() {
         final var request = new CreateTemplateRequest(NAME, null);
-        final var expectedValidationResult = failure(List.of(NON_VALID_PAYLOAD_MSG));
+        final var expectedValidationResult = failure(of(NON_VALID_PAYLOAD_MSG));
 
         final var actualValidationResult = validator.validate(request);
 
@@ -75,7 +74,7 @@ class CreateTemplateRequestValidatorTest {
     @Test
     void given_emptyPayloadCreateTemplateRequest_when_validate_then_returnSuccess() {
         final var request = new CreateTemplateRequest(NAME, EMPTY);
-        final var expectedValidationResult = failure(List.of(NON_VALID_PAYLOAD_MSG));
+        final var expectedValidationResult = failure(of(NON_VALID_PAYLOAD_MSG));
 
         final var actualValidationResult = validator.validate(request);
 
@@ -85,7 +84,7 @@ class CreateTemplateRequestValidatorTest {
     @Test
     void given_blankPayloadCreateTemplateRequest_when_validate_then_returnSuccess() {
         final var request = new CreateTemplateRequest(NAME, SPACE);
-        final var expectedValidationResult = failure(List.of(NON_VALID_PAYLOAD_MSG));
+        final var expectedValidationResult = failure(of(NON_VALID_PAYLOAD_MSG));
 
         final var actualValidationResult = validator.validate(request);
 

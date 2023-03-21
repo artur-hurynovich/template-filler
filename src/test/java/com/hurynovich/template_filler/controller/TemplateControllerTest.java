@@ -108,8 +108,8 @@ class TemplateControllerTest {
         final var templateResponse = new TemplateResponse(ID_1, NAME_1, PAYLOAD_1);
         when(createTemplateRequestValidator.validate(refEq(createTemplateRequest))).thenReturn(success());
         when(converter.convert(refEq(createTemplateRequest))).thenReturn(templateDto);
-        when(service.save(refEq(templateDto))).thenReturn(templateDto);
-        when(converter.convert(refEq(templateDto))).thenReturn(templateResponse);
+        when(service.save(templateDto)).thenReturn(templateDto);
+        when(converter.convert(templateDto)).thenReturn(templateResponse);
 
         mockMvc
                 .perform(post(CREATE_PATH)
@@ -179,8 +179,8 @@ class TemplateControllerTest {
         final var templateResponse = new TemplateResponse(ID_1, NAME_1, PAYLOAD_1);
         when(updateTemplateRequestValidator.validate(refEq(updateTemplateRequest))).thenReturn(success());
         when(converter.convert(refEq(updateTemplateRequest))).thenReturn(templateDto);
-        when(service.save(refEq(templateDto))).thenReturn(templateDto);
-        when(converter.convert(refEq(templateDto))).thenReturn(templateResponse);
+        when(service.save(templateDto)).thenReturn(templateDto);
+        when(converter.convert(templateDto)).thenReturn(templateResponse);
 
         mockMvc
                 .perform(put(UPDATE_PATH)
