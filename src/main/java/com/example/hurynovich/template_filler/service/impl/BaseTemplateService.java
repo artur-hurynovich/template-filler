@@ -5,14 +5,19 @@ import com.example.hurynovich.template_filler.dto.TemplateDto;
 import com.example.hurynovich.template_filler.repository.TemplateRepository;
 import com.example.hurynovich.template_filler.service.PlaceholderKeyExtractor;
 import com.example.hurynovich.template_filler.service.TemplateService;
+import com.example.hurynovich.template_filler.service.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static java.lang.String.format;
+
 @Service
 @Transactional
 public class BaseTemplateService implements TemplateService {
+
+    private static final String TEMPLATE_NOT_FOUND_EXCEPTION_MSG = "Template with id=[%d] not found";
 
     private final TemplateServiceConverter converter;
 
@@ -40,7 +45,7 @@ public class BaseTemplateService implements TemplateService {
         return repository
                 .findById(id)
                 .map(converter::convert)
-                .orElseThrow();
+                .orElseThrow(() -> new NotFoundException(format(TEMPLATE_NOT_FOUND_EXCEPTION_MSG, id)));
     }
 
     @Override
