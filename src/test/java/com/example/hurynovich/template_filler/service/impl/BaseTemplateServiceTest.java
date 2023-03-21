@@ -6,6 +6,7 @@ import com.example.hurynovich.template_filler.entity.PlaceholderKeyEntity;
 import com.example.hurynovich.template_filler.entity.TemplateEntity;
 import com.example.hurynovich.template_filler.repository.TemplateRepository;
 import com.example.hurynovich.template_filler.service.PlaceholderKeyExtractor;
+import com.example.hurynovich.template_filler.service.exception.NotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
@@ -32,6 +34,8 @@ class BaseTemplateServiceTest {
 
     private static final String PLACEHOLDER_KEY_1 = "test placeholder key 1";
     private static final String PLACEHOLDER_KEY_2 = "test placeholder key 2";
+
+    private static final String TEMPLATE_NOT_FOUND_EXCEPTION_MSG = "Template with id=[1623] not found";
 
     @Mock
     private TemplateServiceConverter converter;
@@ -71,6 +75,15 @@ class BaseTemplateServiceTest {
         final var actualTemplateDto = service.findById(ID_1);
 
         assertEquals(templateDto, actualTemplateDto);
+    }
+
+    @Test
+    void given_id_when_findById_then_throwNotFoundException() {
+        when(repository.findById(ID_1)).thenReturn(Optional.empty());
+
+        final var actualException = assertThrows(NotFoundException.class, () -> service.findById(ID_1));
+
+        assertEquals(TEMPLATE_NOT_FOUND_EXCEPTION_MSG, actualException.getMessage());
     }
 
     @Test

@@ -1,10 +1,12 @@
 package com.example.hurynovich.template_filler.controller;
 
+import com.example.hurynovich.template_filler.controller.exception.ControllerValidationException;
 import com.example.hurynovich.template_filler.converter.TemplateApiConverter;
 import com.example.hurynovich.template_filler.request.CreateTemplateRequest;
 import com.example.hurynovich.template_filler.request.UpdateTemplateRequest;
 import com.example.hurynovich.template_filler.response.TemplateResponse;
 import com.example.hurynovich.template_filler.service.TemplateService;
+import com.example.hurynovich.template_filler.validator.Validator;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import static java.lang.String.format;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
@@ -24,11 +27,21 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 @RequestMapping("/v1/templates")
 public class TemplateController {
 
+    private static final String ID_PATH_VARIABLE_MISMATCH_MSG = "Path variable 'id'=[%d] should be equal to 'request.id'=[%d]";
+
+    private final Validator<CreateTemplateRequest> createTemplateRequestValidator;
+
+    private final Validator<UpdateTemplateRequest> updateTemplateRequestValidator;
+
     private final TemplateApiConverter converter;
 
     private final TemplateService service;
 
-    public TemplateController(final TemplateApiConverter converter, final TemplateService service) {
+    public TemplateController(final Validator<CreateTemplateRequest> createTemplateRequestValidator,
+                              final Validator<UpdateTemplateRequest> updateTemplateRequestValidator,
+                              final TemplateApiConverter converter, final TemplateService service) {
+        this.createTemplateRequestValidator = createTemplateRequestValidator;
+        this.updateTemplateRequestValidator = updateTemplateRequestValidator;
         this.converter = converter;
         this.service = service;
     }
@@ -36,7 +49,12 @@ public class TemplateController {
     @PostMapping
     @ResponseStatus(CREATED)
     public TemplateResponse create(@RequestBody final CreateTemplateRequest request) {
-        return converter.convert(service.save(converter.convert(request)));
+        final var validationResult = createTemplateRequestValidator.validate(request);
+        if (validationResult.isSuccess()) {
+            return converter.convert(service.save(converter.convert(request)));
+        } else {
+            throw new ControllerValidationException(validationResult.formatErrors());
+        }
     }
 
     @GetMapping("/{id}")
@@ -55,7 +73,17 @@ public class TemplateController {
 
     @PutMapping("/{id}")
     public TemplateResponse update(@PathVariable final Long id, @RequestBody final UpdateTemplateRequest request) {
-        return converter.convert(service.save(converter.convert(request)));
+        final var validationResult = updateTemplateRequestValidator.validate(request);
+        if (validationResult.isSuccess()) {
+            final Long requestId = request.getId();
+            if (id.equals(requestId)) {
+                return converter.convert(service.save(converter.convert(request)));
+            } else {
+                throw new ControllerValidationException(format(ID_PATH_VARIABLE_MISMATCH_MSG, id, requestId));
+            }
+        } else {
+            throw new ControllerValidationException(validationResult.formatErrors());
+        }
     }
 
     @DeleteMapping("/{id}")
