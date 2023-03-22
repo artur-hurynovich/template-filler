@@ -38,6 +38,7 @@ class TemplateControllerTest {
     private static final String GET_BY_ID_PATH = "/v1/templates/1707";
     private static final String GET_ALL_PATH = "/v1/templates";
     private static final String UPDATE_PATH = "/v1/templates/1707";
+    private static final String UPDATE_PATH_ID_MISMATCH = "/v1/templates/841";
     private static final String DELETE_BY_ID_PATH = "/v1/templates/1707";
 
     private static final String CREATE_TEMPLATE_REQUEST_JSON = """
@@ -85,6 +86,7 @@ class TemplateControllerTest {
 
     private static final String VALIDATION_ERROR = "test validation error";
     private static final String NOT_FOUND_EXCEPTION_MSG = "test not found exception message";
+    private static final String ID_PATH_VARIABLE_MISMATCH_MSG = "path variable 'id'=[841] should be equal to 'request.id'=[1707]";
 
     @Autowired
     private MockMvc mockMvc;
@@ -202,6 +204,19 @@ class TemplateControllerTest {
                         .content(UPDATE_TEMPLATE_REQUEST_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(VALIDATION_ERROR));
+    }
+
+    @Test
+    void given_updateTemplateRequest_when_update_then_returnBadRequest() throws Exception {
+        final var updateTemplateRequest = new UpdateTemplateRequest(ID_1, NAME_1, PAYLOAD_1);
+        when(updateTemplateRequestValidator.validate(refEq(updateTemplateRequest))).thenReturn(success());
+
+        mockMvc
+                .perform(put(UPDATE_PATH_ID_MISMATCH)
+                        .contentType(APPLICATION_JSON)
+                        .content(UPDATE_TEMPLATE_REQUEST_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(ID_PATH_VARIABLE_MISMATCH_MSG));
     }
 
     @Test

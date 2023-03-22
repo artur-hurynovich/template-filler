@@ -27,7 +27,7 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 @RequestMapping("/v1/templates")
 public class TemplateController {
 
-    private static final String ID_PATH_VARIABLE_MISMATCH_MSG = "Path variable 'id'=[%d] should be equal to 'request.id'=[%d]";
+    private static final String ID_PATH_VARIABLE_MISMATCH_MSG = "path variable 'id'=[%d] should be equal to 'request.id'=[%d]";
 
     private final Validator<CreateTemplateRequest> createTemplateRequestValidator;
 
