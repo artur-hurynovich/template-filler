@@ -17,7 +17,7 @@ import static java.lang.String.format;
 @Transactional
 public class BaseTemplateService implements TemplateService {
 
-    private static final String TEMPLATE_NOT_FOUND_EXCEPTION_MSG = "Template with id=[%d] not found";
+    private static final String TEMPLATE_NOT_FOUND_EXCEPTION_MSG = "template with 'id'=[%d] not found";
 
     private final TemplateServiceConverter converter;
 
@@ -61,5 +61,15 @@ public class BaseTemplateService implements TemplateService {
     @Override
     public void deleteById(final Long id) {
         repository.deleteById(id);
+    }
+
+    @Override
+    public boolean existsByName(final String name) {
+        return repository.existsByName(name);
+    }
+
+    @Override
+    public boolean existsByNameAndNotId(final String name, final Long id) {
+        return repository.existsByNameAndIdNot(name, id);
     }
 }

@@ -28,22 +28,22 @@ import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TE
 @TestPropertySource("/application-test.properties")
 class BaseTemplateServiceIT {
 
-    private static final String TEMPLATE_NAME = "test template name";
+    private static final String NAME = "test name";
     private static final String PLACEHOLDER_KEY_1 = "first_name";
     private static final String PLACEHOLDER_KEY_2 = "last_name";
-    private static final String TEMPLATE_PAYLOAD = "Hello, {{" + PLACEHOLDER_KEY_1 + "}} {{" + PLACEHOLDER_KEY_2 + "}}";
+    private static final String PAYLOAD = "Hello, {{" + PLACEHOLDER_KEY_1 + "}} {{" + PLACEHOLDER_KEY_2 + "}}";
 
-    private static final Long TEMPLATE_ID_1 = 100L;
-    private static final String TEMPLATE_NAME_1 = "test template name 1";
-    private static final String TEMPLATE_PAYLOAD_1 = "test template payload 1";
+    private static final Long ID_1 = 100L;
+    private static final String NAME_1 = "test name 1";
+    private static final String PAYLOAD_1 = "test payload 1";
 
-    private static final Long TEMPLATE_ID_2 = 200L;
-    private static final String TEMPLATE_NAME_2 = "test template name 2";
-    private static final String TEMPLATE_PAYLOAD_2 = "test template payload 2";
+    private static final Long ID_2 = 200L;
+    private static final String NAME_2 = "test name 2";
+    private static final String PAYLOAD_2 = "test payload 2";
 
-    private static final Long TEMPLATE_ID_3 = 300L;
-    private static final String TEMPLATE_NAME_3 = "test template name 3";
-    private static final String TEMPLATE_PAYLOAD_3 = "test template payload 3";
+    private static final Long ID_3 = 300L;
+    private static final String NAME_3 = "test name 3";
+    private static final String PAYLOAD_3 = "test payload 3";
 
     private static final String ID_FIELD_NAME = "id";
 
@@ -59,7 +59,7 @@ class BaseTemplateServiceIT {
     @Test
     @Sql(scripts = "/integration/db-scripts/common/clear.sql", executionPhase = AFTER_TEST_METHOD)
     void given_newTemplateDto_when_save_then_returnTemplateDto() {
-        final var originalTemplateDto = new TemplateDto(null, TEMPLATE_NAME, TEMPLATE_PAYLOAD);
+        final var originalTemplateDto = new TemplateDto(null, NAME, PAYLOAD);
 
         final var actualTemplateDto = service.save(originalTemplateDto);
 
@@ -87,14 +87,14 @@ class BaseTemplateServiceIT {
             executionPhase = BEFORE_TEST_METHOD), @Sql(scripts = "/integration/db-scripts/common/clear.sql",
             executionPhase = AFTER_TEST_METHOD)})
     void given_existingTemplateDto_when_save_then_returnTemplateDto() {
-        final var originalTemplateDto = new TemplateDto(TEMPLATE_ID_1, TEMPLATE_NAME, TEMPLATE_PAYLOAD);
+        final var originalTemplateDto = new TemplateDto(ID_1, NAME, PAYLOAD);
 
         final var actualTemplateDto = service.save(originalTemplateDto);
 
         assertEquals(originalTemplateDto, actualTemplateDto);
-        assertTrue(templateRepository.existsById(TEMPLATE_ID_1));
+        assertTrue(templateRepository.existsById(ID_1));
 
-        final var placeholderKeyEntities = placeholderKeyRepository.findAllByTemplateId(TEMPLATE_ID_1);
+        final var placeholderKeyEntities = placeholderKeyRepository.findAllByTemplateId(ID_1);
         assertFalse(placeholderKeyEntities.isEmpty());
         assertEquals(2, placeholderKeyEntities.size());
         assertTrue(placeholderKeyEntities
@@ -109,9 +109,9 @@ class BaseTemplateServiceIT {
             executionPhase = BEFORE_TEST_METHOD), @Sql(scripts = "/integration/db-scripts/common/clear.sql",
             executionPhase = AFTER_TEST_METHOD)})
     void given_templateExists_when_findById_then_returnTemplateDto() {
-        final var expectedTemplateDto = new TemplateDto(TEMPLATE_ID_1, TEMPLATE_NAME_1, TEMPLATE_PAYLOAD_1);
+        final var expectedTemplateDto = new TemplateDto(ID_1, NAME_1, PAYLOAD_1);
 
-        final var actualTemplateDto = service.findById(TEMPLATE_ID_1);
+        final var actualTemplateDto = service.findById(ID_1);
 
         assertEquals(expectedTemplateDto, actualTemplateDto);
     }
@@ -121,8 +121,8 @@ class BaseTemplateServiceIT {
             executionPhase = BEFORE_TEST_METHOD), @Sql(scripts = "/integration/db-scripts/common/clear.sql",
             executionPhase = AFTER_TEST_METHOD)})
     void given_templatesExist_when_findAll_then_returnTemplateDtoList() {
-        final var expectedTemplateDtoList = of(new TemplateDto(TEMPLATE_ID_2, TEMPLATE_NAME_2, TEMPLATE_PAYLOAD_2),
-                new TemplateDto(TEMPLATE_ID_3, TEMPLATE_NAME_3, TEMPLATE_PAYLOAD_3));
+        final var expectedTemplateDtoList = of(new TemplateDto(ID_2, NAME_2, PAYLOAD_2),
+                new TemplateDto(ID_3, NAME_3, PAYLOAD_3));
 
         final var actualTemplateDtoList = service.findAll();
 
@@ -134,11 +134,45 @@ class BaseTemplateServiceIT {
             executionPhase = BEFORE_TEST_METHOD), @Sql(scripts = "/integration/db-scripts/common/clear.sql",
             executionPhase = AFTER_TEST_METHOD)})
     void given_templateExists_when_deleteById_then_delete() {
-        service.deleteById(TEMPLATE_ID_1);
+        service.deleteById(ID_1);
 
-        assertFalse(templateRepository.existsById(TEMPLATE_ID_1));
+        assertFalse(templateRepository.existsById(ID_1));
         assertTrue(placeholderKeyRepository
-                .findAllByTemplateId(TEMPLATE_ID_1)
+                .findAllByTemplateId(ID_1)
                 .isEmpty());
+    }
+
+    @Test
+    @SqlGroup({@Sql(scripts = "/integration/db-scripts/templates/insert-template.sql",
+            executionPhase = BEFORE_TEST_METHOD), @Sql(scripts = "/integration/db-scripts/common/clear.sql",
+            executionPhase = AFTER_TEST_METHOD)})
+    void given_templateExists_when_existsByName_then_returnTrue() {
+        assertTrue(service.existsByName(NAME_1));
+    }
+
+    @Test
+    void given_templateDoesNotExist_when_existsByName_then_returnFalse() {
+        assertFalse(service.existsByName(NAME_1));
+    }
+
+    @Test
+    @SqlGroup({@Sql(scripts = "/integration/db-scripts/templates/insert-template.sql",
+            executionPhase = BEFORE_TEST_METHOD), @Sql(scripts = "/integration/db-scripts/common/clear.sql",
+            executionPhase = AFTER_TEST_METHOD)})
+    void given_templateExists_when_existsByNameAndNotId_then_returnTrue() {
+        assertTrue(service.existsByNameAndNotId(NAME_1, ID_2));
+    }
+
+    @Test
+    @SqlGroup({@Sql(scripts = "/integration/db-scripts/templates/insert-template.sql",
+            executionPhase = BEFORE_TEST_METHOD), @Sql(scripts = "/integration/db-scripts/common/clear.sql",
+            executionPhase = AFTER_TEST_METHOD)})
+    void given_templateExists_when_existsByNameAndNotId_then_returnFalse() {
+        assertFalse(service.existsByNameAndNotId(NAME_1, ID_1));
+    }
+
+    @Test
+    void given_templateDoesNotExist_when_existsByNameAndNotId_then_returnFalse() {
+        assertFalse(service.existsByNameAndNotId(NAME_1, ID_1));
     }
 }

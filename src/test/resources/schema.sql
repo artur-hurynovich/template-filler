@@ -20,6 +20,7 @@ CREATE TABLE placeholder_keys
 );
 
 CREATE INDEX placeholder_keys_template_id_idx ON placeholder_keys(template_id);
+CREATE INDEX template_name_idx ON templates(name);
 
 CREATE SEQUENCE templates_id_seq START WITH 1 INCREMENT 1;
 CREATE SEQUENCE placeholder_keys_id_seq START WITH 1 INCREMENT 1;

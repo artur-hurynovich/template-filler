@@ -1,2 +1,2 @@
-INSERT INTO templates VALUES (200, 'test template name 2', 'test template payload 2');
-INSERT INTO templates VALUES (300, 'test template name 3', 'test template payload 3');
+INSERT INTO templates VALUES (200, 'test name 2', 'test payload 2');
+INSERT INTO templates VALUES (300, 'test name 3', 'test payload 3');
