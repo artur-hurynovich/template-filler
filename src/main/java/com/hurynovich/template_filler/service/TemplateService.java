@@ -17,4 +17,6 @@ public interface TemplateService {
     boolean existsByName(String name);
 
     boolean existsByNameAndNotId(String name, Long id);
+
+    List<TemplateDto> findAllByNamePattern(String namePattern);
 }

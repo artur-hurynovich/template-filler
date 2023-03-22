@@ -72,4 +72,13 @@ public class BaseTemplateService implements TemplateService {
     public boolean existsByNameAndNotId(final String name, final Long id) {
         return repository.existsByNameAndIdNot(name, id);
     }
+
+    @Override
+    public List<TemplateDto> findAllByNamePattern(final String namePattern) {
+        return repository
+                .findAllByNameContaining(namePattern)
+                .stream()
+                .map(converter::convert)
+                .toList();
+    }
 }
