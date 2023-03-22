@@ -37,6 +37,8 @@ class BaseTemplateServiceTest {
     private static final String PLACEHOLDER_KEY_1 = "test placeholder key 1";
     private static final String PLACEHOLDER_KEY_2 = "test placeholder key 2";
 
+    private static final String NAME_PATTERN = "test name";
+
     private static final String TEMPLATE_NOT_FOUND_EXCEPTION_MSG = "template with 'id'=[1623] not found";
 
     @Mock
@@ -129,6 +131,22 @@ class BaseTemplateServiceTest {
         final var actualExistsByNameAndNotId = service.existsByNameAndNotId(NAME_1, ID_1);
 
         assertFalse(actualExistsByNameAndNotId);
+    }
+
+    @Test
+    void when_findAllByNamePattern_then_returnTemplateDtoList() {
+        final var templateEntity1 = generateTemplateEntity1();
+        final var templateEntity2 = generateTemplateEntity2();
+        final var templateDto1 = new TemplateDto(ID_1, NAME_1, PAYLOAD_1);
+        final var templateDto2 = new TemplateDto(ID_2, NAME_2, PAYLOAD_2);
+        final var expectedTemplateDtoList = List.of(templateDto1, templateDto2);
+        when(repository.findAllByNameContaining(NAME_PATTERN)).thenReturn(List.of(templateEntity1, templateEntity2));
+        when(converter.convert(templateEntity1)).thenReturn(templateDto1);
+        when(converter.convert(templateEntity2)).thenReturn(templateDto2);
+
+        final var actualTemplateDtoList = service.findAllByNamePattern(NAME_PATTERN);
+
+        assertEquals(actualTemplateDtoList, expectedTemplateDtoList);
     }
 
     private TemplateEntity generateTemplateEntity1() {

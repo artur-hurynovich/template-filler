@@ -45,6 +45,8 @@ class BaseTemplateServiceIT {
     private static final String NAME_3 = "test name 3";
     private static final String PAYLOAD_3 = "test payload 3";
 
+    private static final String NAME_PATTERN = "name 2";
+
     private static final String ID_FIELD_NAME = "id";
 
     @Autowired
@@ -174,5 +176,17 @@ class BaseTemplateServiceIT {
     @Test
     void given_templateDoesNotExist_when_existsByNameAndNotId_then_returnFalse() {
         assertFalse(service.existsByNameAndNotId(NAME_1, ID_1));
+    }
+
+    @Test
+    @SqlGroup({@Sql(scripts = "/integration/db-scripts/templates/insert-templates.sql",
+            executionPhase = BEFORE_TEST_METHOD), @Sql(scripts = "/integration/db-scripts/common/clear.sql",
+            executionPhase = AFTER_TEST_METHOD)})
+    void given_templatesExist_when_findAllByNamePattern_then_returnTemplateDtoList() {
+        final var expectedTemplateDtoList = of(new TemplateDto(ID_2, NAME_2, PAYLOAD_2));
+
+        final var actualTemplateDtoList = service.findAllByNamePattern(NAME_PATTERN);
+
+        assertEquals(expectedTemplateDtoList, actualTemplateDtoList);
     }
 }

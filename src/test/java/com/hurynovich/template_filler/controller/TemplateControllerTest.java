@@ -37,52 +37,55 @@ class TemplateControllerTest {
     private static final String CREATE_PATH = "/v1/templates";
     private static final String GET_BY_ID_PATH = "/v1/templates/1707";
     private static final String GET_ALL_PATH = "/v1/templates";
+    private static final String GET_ALL_BY_NAME_PATH = "/v1/templates?name=test name";
     private static final String UPDATE_PATH = "/v1/templates/1707";
     private static final String UPDATE_PATH_ID_MISMATCH = "/v1/templates/841";
     private static final String DELETE_BY_ID_PATH = "/v1/templates/1707";
 
     private static final String CREATE_TEMPLATE_REQUEST_JSON = """
             {
-              "name": "test template name 1",
-              "payload": "test template payload 1"
+              "name": "test name 1",
+              "payload": "test payload 1"
             }
             """;
     private static final String UPDATE_TEMPLATE_REQUEST_JSON = """
             {
               "id": 1707,
-              "name": "test template name 1",
-              "payload": "test template payload 1"
+              "name": "test name 1",
+              "payload": "test payload 1"
             }
             """;
     private static final String TEMPLATE_RESPONSE_JSON = """
             {
               "id": 1707,
-              "name": "test template name 1",
-              "payload": "test template payload 1"
+              "name": "test name 1",
+              "payload": "test payload 1"
             }
             """;
     private static final String TEMPLATE_RESPONSES_JSON = """
             [
               {
                 "id": 1707,
-                "name": "test template name 1",
-                "payload": "test template payload 1"
+                "name": "test name 1",
+                "payload": "test payload 1"
               },
               {
                 "id": 1710,
-                "name": "test template name 2",
-                "payload": "test template payload 2"
+                "name": "test name 2",
+                "payload": "test payload 2"
               }
             ]
             """;
 
     private static final Long ID_1 = 1707L;
-    private static final String NAME_1 = "test template name 1";
-    private static final String PAYLOAD_1 = "test template payload 1";
+    private static final String NAME_1 = "test name 1";
+    private static final String PAYLOAD_1 = "test payload 1";
 
     private static final Long ID_2 = 1710L;
-    private static final String NAME_2 = "test template name 2";
-    private static final String PAYLOAD_2 = "test template payload 2";
+    private static final String NAME_2 = "test name 2";
+    private static final String PAYLOAD_2 = "test payload 2";
+
+    private static final String NAME_PATTERN = "test name";
 
     private static final String VALIDATION_ERROR = "test validation error";
     private static final String NOT_FOUND_EXCEPTION_MSG = "test not found exception message";
@@ -228,5 +231,21 @@ class TemplateControllerTest {
         mockMvc
                 .perform(delete(DELETE_BY_ID_PATH))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void when_getAllByName_then_returnTemplateResponses() throws Exception {
+        final var templateDto1 = new TemplateDto(ID_1, NAME_1, PAYLOAD_1);
+        final var templateDto2 = new TemplateDto(ID_2, NAME_2, PAYLOAD_2);
+        final var templateResponse1 = new TemplateResponse(ID_1, NAME_1, PAYLOAD_1);
+        final var templateResponse2 = new TemplateResponse(ID_2, NAME_2, PAYLOAD_2);
+        when(service.findAllByNamePattern(NAME_PATTERN)).thenReturn(of(templateDto1, templateDto2));
+        when(converter.convert(templateDto1)).thenReturn(templateResponse1);
+        when(converter.convert(templateDto2)).thenReturn(templateResponse2);
+
+        mockMvc
+                .perform(get(GET_ALL_BY_NAME_PATH))
+                .andExpect(status().isOk())
+                .andExpect(content().json(TEMPLATE_RESPONSES_JSON));
     }
 }
