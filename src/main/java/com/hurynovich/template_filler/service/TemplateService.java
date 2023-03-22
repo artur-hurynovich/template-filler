@@ -13,4 +13,8 @@ public interface TemplateService {
     List<TemplateDto> findAll();
 
     void deleteById(Long id);
+
+    boolean existsByName(String name);
+
+    boolean existsByNameAndNotId(String name, Long id);
 }
