@@ -1,9 +1,9 @@
 package com.hurynovich.template_filler.service.impl;
 
 import com.hurynovich.template_filler.converter.PlaceholderKeyServiceConverter;
+import com.hurynovich.template_filler.dao.PlaceholderKeyDao;
 import com.hurynovich.template_filler.dto.PlaceholderKeyDto;
 import com.hurynovich.template_filler.entity.PlaceholderKeyEntity;
-import com.hurynovich.template_filler.repository.PlaceholderKeyRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,7 +28,7 @@ class BasePlaceholderKeyServiceTest {
     private PlaceholderKeyServiceConverter converter;
 
     @Mock
-    private PlaceholderKeyRepository repository;
+    private PlaceholderKeyDao dao;
 
     @InjectMocks
     private BasePlaceholderKeyService service;
@@ -45,7 +45,7 @@ class BasePlaceholderKeyServiceTest {
         final var placeholderKeyDto1 = new PlaceholderKeyDto(PLACEHOLDER_KEY_ID_1, PLACEHOLDER_KEY_1);
         final var placeholderKeyDto2 = new PlaceholderKeyDto(PLACEHOLDER_KEY_ID_2, PLACEHOLDER_KEY_2);
         final var expectedPlaceholderKeyDtoList = of(placeholderKeyDto1, placeholderKeyDto2);
-        when(repository.findAllByTemplateId(TEMPLATE_ID)).thenReturn(placeholderKeyEntities);
+        when(dao.findAllByTemplateId(TEMPLATE_ID)).thenReturn(placeholderKeyEntities);
         when(converter.convert(placeholderKeyEntity1)).thenReturn(placeholderKeyDto1);
         when(converter.convert(placeholderKeyEntity2)).thenReturn(placeholderKeyDto2);
 

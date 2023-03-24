@@ -1,25 +1,20 @@
 package com.hurynovich.template_filler.entity;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static jakarta.persistence.CascadeType.ALL;
-import static jakarta.persistence.GenerationType.SEQUENCE;
 
 @Entity
 @Table(name = "templates")
 public class TemplateEntity {
 
     @Id
-    @SequenceGenerator(name = "templates_id_seq", sequenceName = "templates_id_seq", allocationSize = 1)
-    @GeneratedValue(strategy = SEQUENCE, generator = "templates_id_seq")
     private Long id;
 
     private String name;
