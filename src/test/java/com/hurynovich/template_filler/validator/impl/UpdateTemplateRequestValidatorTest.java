@@ -1,7 +1,7 @@
 package com.hurynovich.template_filler.validator.impl;
 
-import com.hurynovich.template_filler.request.UpdateTemplateRequest;
-import com.hurynovich.template_filler.service.TemplateService;
+import com.hurynovich.template_filler.command.UpdateTemplateCommand;
+import com.hurynovich.template_filler.service.TemplateQueryService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class UpdateTemplateRequestValidatorTest {
+class UpdateTemplateCommandValidatorTest {
 
     private static final Long ID = 1008L;
     private static final String NAME = "test name";
@@ -29,14 +29,14 @@ class UpdateTemplateRequestValidatorTest {
     private static final String NAME_DUPLICATE_MSG = "template with 'name'=[test name] already exists";
 
     @Mock
-    private TemplateService service;
+    private TemplateQueryService service;
 
     @InjectMocks
-    private UpdateTemplateRequestValidator validator;
+    private UpdateTemplateCommandValidator validator;
 
     @Test
-    void given_validUpdateTemplateRequest_when_validate_then_returnSuccess() {
-        final var request = new UpdateTemplateRequest(ID, NAME, PAYLOAD);
+    void given_validUpdateTemplateCommand_when_validate_then_returnSuccess() {
+        final var request = new UpdateTemplateCommand(ID, NAME, PAYLOAD);
         final var expectedValidationResult = success();
         when(service.existsByNameAndNotId(NAME, ID)).thenReturn(false);
 
@@ -46,8 +46,8 @@ class UpdateTemplateRequestValidatorTest {
     }
 
     @Test
-    void given_nullIdUpdateTemplateRequest_when_validate_then_returnSuccess() {
-        final var request = new UpdateTemplateRequest(null, NAME, PAYLOAD);
+    void given_nullIdUpdateTemplateCommand_when_validate_then_returnSuccess() {
+        final var request = new UpdateTemplateCommand(null, NAME, PAYLOAD);
         final var expectedValidationResult = failure(of(NON_VALID_ID_MSG));
 
         final var actualValidationResult = validator.validate(request);
@@ -56,8 +56,8 @@ class UpdateTemplateRequestValidatorTest {
     }
 
     @Test
-    void given_nullNameUpdateTemplateRequest_when_validate_then_returnSuccess() {
-        final var request = new UpdateTemplateRequest(ID, null, PAYLOAD);
+    void given_nullNameUpdateTemplateCommand_when_validate_then_returnSuccess() {
+        final var request = new UpdateTemplateCommand(ID, null, PAYLOAD);
         final var expectedValidationResult = failure(of(NON_VALID_NAME_MSG));
 
         final var actualValidationResult = validator.validate(request);
@@ -66,8 +66,8 @@ class UpdateTemplateRequestValidatorTest {
     }
 
     @Test
-    void given_emptyNameUpdateTemplateRequest_when_validate_then_returnSuccess() {
-        final var request = new UpdateTemplateRequest(ID, EMPTY, PAYLOAD);
+    void given_emptyNameUpdateTemplateCommand_when_validate_then_returnSuccess() {
+        final var request = new UpdateTemplateCommand(ID, EMPTY, PAYLOAD);
         final var expectedValidationResult = failure(of(NON_VALID_NAME_MSG));
 
         final var actualValidationResult = validator.validate(request);
@@ -76,8 +76,8 @@ class UpdateTemplateRequestValidatorTest {
     }
 
     @Test
-    void given_blankNameUpdateTemplateRequest_when_validate_then_returnSuccess() {
-        final var request = new UpdateTemplateRequest(ID, SPACE, PAYLOAD);
+    void given_blankNameUpdateTemplateCommand_when_validate_then_returnSuccess() {
+        final var request = new UpdateTemplateCommand(ID, SPACE, PAYLOAD);
         final var expectedValidationResult = failure(of(NON_VALID_NAME_MSG));
 
         final var actualValidationResult = validator.validate(request);
@@ -86,8 +86,8 @@ class UpdateTemplateRequestValidatorTest {
     }
 
     @Test
-    void given_nullPayloadUpdateTemplateRequest_when_validate_then_returnSuccess() {
-        final var request = new UpdateTemplateRequest(ID, NAME, null);
+    void given_nullPayloadUpdateTemplateCommand_when_validate_then_returnSuccess() {
+        final var request = new UpdateTemplateCommand(ID, NAME, null);
         final var expectedValidationResult = failure(of(NON_VALID_PAYLOAD_MSG));
         when(service.existsByNameAndNotId(NAME, ID)).thenReturn(false);
 
@@ -97,8 +97,8 @@ class UpdateTemplateRequestValidatorTest {
     }
 
     @Test
-    void given_emptyPayloadUpdateTemplateRequest_when_validate_then_returnSuccess() {
-        final var request = new UpdateTemplateRequest(ID, NAME, EMPTY);
+    void given_emptyPayloadUpdateTemplateCommand_when_validate_then_returnSuccess() {
+        final var request = new UpdateTemplateCommand(ID, NAME, EMPTY);
         final var expectedValidationResult = failure(of(NON_VALID_PAYLOAD_MSG));
         when(service.existsByNameAndNotId(NAME, ID)).thenReturn(false);
 
@@ -108,8 +108,8 @@ class UpdateTemplateRequestValidatorTest {
     }
 
     @Test
-    void given_blankPayloadUpdateTemplateRequest_when_validate_then_returnSuccess() {
-        final var request = new UpdateTemplateRequest(ID, NAME, SPACE);
+    void given_blankPayloadUpdateTemplateCommand_when_validate_then_returnSuccess() {
+        final var request = new UpdateTemplateCommand(ID, NAME, SPACE);
         final var expectedValidationResult = failure(of(NON_VALID_PAYLOAD_MSG));
         when(service.existsByNameAndNotId(NAME, ID)).thenReturn(false);
 
@@ -119,8 +119,8 @@ class UpdateTemplateRequestValidatorTest {
     }
 
     @Test
-    void given_validUpdateTemplateRequest_when_validate_then_returnFailure() {
-        final var request = new UpdateTemplateRequest(ID, NAME, PAYLOAD);
+    void given_validUpdateTemplateCommand_when_validate_then_returnFailure() {
+        final var request = new UpdateTemplateCommand(ID, NAME, PAYLOAD);
         final var expectedValidationResult = failure(of(NAME_DUPLICATE_MSG));
         when(service.existsByNameAndNotId(NAME, ID)).thenReturn(true);
 

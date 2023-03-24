@@ -1,7 +1,7 @@
 package com.hurynovich.template_filler.service.impl;
 
 import com.hurynovich.template_filler.dto.TemplateDto;
-import com.hurynovich.template_filler.service.TemplateService;
+import com.hurynovich.template_filler.service.TemplateQueryService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,7 +24,7 @@ class BaseTemplateFillerTest {
     private static final String FILLED_TEMPLATE = "Hello, John Doe";
 
     @Mock
-    private TemplateService service;
+    private TemplateQueryService service;
 
     @InjectMocks
     private BaseTemplateFiller filler;

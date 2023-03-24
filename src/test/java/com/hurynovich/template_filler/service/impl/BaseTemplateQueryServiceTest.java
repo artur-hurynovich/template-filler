@@ -1,11 +1,10 @@
 package com.hurynovich.template_filler.service.impl;
 
 import com.hurynovich.template_filler.converter.TemplateServiceConverter;
+import com.hurynovich.template_filler.dao.TemplateDao;
 import com.hurynovich.template_filler.dto.TemplateDto;
 import com.hurynovich.template_filler.entity.PlaceholderKeyEntity;
 import com.hurynovich.template_filler.entity.TemplateEntity;
-import com.hurynovich.template_filler.repository.TemplateRepository;
-import com.hurynovich.template_filler.service.PlaceholderKeyExtractor;
 import com.hurynovich.template_filler.service.exception.NotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,15 +15,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Optional.empty;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class BaseTemplateServiceTest {
+class BaseTemplateQueryServiceTest {
 
     private static final Long ID_1 = 1623L;
     private static final String NAME_1 = "test name 1";
@@ -45,35 +44,16 @@ class BaseTemplateServiceTest {
     private TemplateServiceConverter converter;
 
     @Mock
-    private TemplateRepository repository;
-
-    @Mock
-    private PlaceholderKeyExtractor extractor;
+    private TemplateDao dao;
 
     @InjectMocks
-    private BaseTemplateService service;
-
-    @Test
-    void given_templateDto_when_save_then_returnTemplateDto() {
-        final var placeholderKeys = List.of(PLACEHOLDER_KEY_1, PLACEHOLDER_KEY_2);
-        final var templateDto = new TemplateDto(null, NAME_1, PAYLOAD_1);
-        final var templateEntity = generateTemplateEntity1();
-        final var persistedTemplateDto = new TemplateDto(ID_1, NAME_1, PAYLOAD_1);
-        when(extractor.extract(PAYLOAD_1)).thenReturn(placeholderKeys);
-        when(converter.convert(templateDto, placeholderKeys)).thenReturn(templateEntity);
-        when(repository.save(templateEntity)).thenReturn(templateEntity);
-        when(converter.convert(templateEntity)).thenReturn(persistedTemplateDto);
-
-        final var actualTemplateDto = service.save(templateDto);
-
-        assertEquals(persistedTemplateDto, actualTemplateDto);
-    }
+    private BaseTemplateQueryService service;
 
     @Test
     void given_id_when_findById_then_returnTemplateDto() {
         final var templateEntity = generateTemplateEntity1();
         final var templateDto = new TemplateDto(ID_1, NAME_1, PAYLOAD_1);
-        when(repository.findById(ID_1)).thenReturn(Optional.of(templateEntity));
+        when(dao.findById(ID_1)).thenReturn(Optional.of(templateEntity));
         when(converter.convert(templateEntity)).thenReturn(templateDto);
 
         final var actualTemplateDto = service.findById(ID_1);
@@ -83,7 +63,7 @@ class BaseTemplateServiceTest {
 
     @Test
     void given_id_when_findById_then_throwNotFoundException() {
-        when(repository.findById(ID_1)).thenReturn(Optional.empty());
+        when(dao.findById(ID_1)).thenReturn(empty());
 
         final var actualException = assertThrows(NotFoundException.class, () -> service.findById(ID_1));
 
@@ -97,7 +77,7 @@ class BaseTemplateServiceTest {
         final var templateDto1 = new TemplateDto(ID_1, NAME_1, PAYLOAD_1);
         final var templateDto2 = new TemplateDto(ID_2, NAME_2, PAYLOAD_2);
         final var expectedTemplateDtoList = List.of(templateDto1, templateDto2);
-        when(repository.findAll()).thenReturn(List.of(templateEntity1, templateEntity2));
+        when(dao.findAll()).thenReturn(List.of(templateEntity1, templateEntity2));
         when(converter.convert(templateEntity1)).thenReturn(templateDto1);
         when(converter.convert(templateEntity2)).thenReturn(templateDto2);
 
@@ -107,17 +87,8 @@ class BaseTemplateServiceTest {
     }
 
     @Test
-    void given_id_when_deleteById_then_delete() {
-        doNothing()
-                .when(repository)
-                .deleteById(ID_1);
-
-        service.deleteById(ID_1);
-    }
-
-    @Test
     void given_name_when_existsByName_then_returnTrue() {
-        when(repository.existsByName(NAME_1)).thenReturn(true);
+        when(dao.existsByName(NAME_1)).thenReturn(true);
 
         final var actualExistsByName = service.existsByName(NAME_1);
 
@@ -126,7 +97,7 @@ class BaseTemplateServiceTest {
 
     @Test
     void given_nameAndId_when_existsByNameAndNotId_then_returnFalse() {
-        when(repository.existsByNameAndIdNot(NAME_1, ID_1)).thenReturn(false);
+        when(dao.existsByNameAndNotId(NAME_1, ID_1)).thenReturn(false);
 
         final var actualExistsByNameAndNotId = service.existsByNameAndNotId(NAME_1, ID_1);
 
@@ -140,7 +111,7 @@ class BaseTemplateServiceTest {
         final var templateDto1 = new TemplateDto(ID_1, NAME_1, PAYLOAD_1);
         final var templateDto2 = new TemplateDto(ID_2, NAME_2, PAYLOAD_2);
         final var expectedTemplateDtoList = List.of(templateDto1, templateDto2);
-        when(repository.findAllByNameContaining(NAME_PATTERN)).thenReturn(List.of(templateEntity1, templateEntity2));
+        when(dao.findAllByNameContaining(NAME_PATTERN)).thenReturn(List.of(templateEntity1, templateEntity2));
         when(converter.convert(templateEntity1)).thenReturn(templateDto1);
         when(converter.convert(templateEntity2)).thenReturn(templateDto2);
 

@@ -1,11 +1,13 @@
 package com.hurynovich.template_filler.controller;
 
+import com.hurynovich.template_filler.command.CreateTemplateCommand;
+import com.hurynovich.template_filler.command.DeleteTemplateCommand;
+import com.hurynovich.template_filler.command.UpdateTemplateCommand;
 import com.hurynovich.template_filler.converter.TemplateApiConverter;
 import com.hurynovich.template_filler.dto.TemplateDto;
-import com.hurynovich.template_filler.request.CreateTemplateRequest;
-import com.hurynovich.template_filler.request.UpdateTemplateRequest;
 import com.hurynovich.template_filler.response.TemplateResponse;
-import com.hurynovich.template_filler.service.TemplateService;
+import com.hurynovich.template_filler.service.TemplateCommandService;
+import com.hurynovich.template_filler.service.TemplateQueryService;
 import com.hurynovich.template_filler.service.exception.NotFoundException;
 import com.hurynovich.template_filler.validator.Validator;
 import org.junit.jupiter.api.Test;
@@ -42,17 +44,17 @@ class TemplateControllerTest {
     private static final String UPDATE_PATH_ID_MISMATCH = "/v1/templates/841";
     private static final String DELETE_BY_ID_PATH = "/v1/templates/1707";
 
-    private static final String CREATE_TEMPLATE_REQUEST_JSON = """
+    private static final String CREATE_TEMPLATE_COMMAND_JSON = """
             {
-              "name": "test name 1",
-              "payload": "test payload 1"
+              "templateName": "test name 1",
+              "templatePayload": "test payload 1"
             }
             """;
-    private static final String UPDATE_TEMPLATE_REQUEST_JSON = """
+    private static final String UPDATE_TEMPLATE_COMMAND_JSON = """
             {
-              "id": 1707,
-              "name": "test name 1",
-              "payload": "test payload 1"
+              "templateId": 1707,
+              "templateName": "test name 1",
+              "templatePayload": "test payload 1"
             }
             """;
     private static final String TEMPLATE_RESPONSE_JSON = """
@@ -89,51 +91,53 @@ class TemplateControllerTest {
 
     private static final String VALIDATION_ERROR = "test validation error";
     private static final String NOT_FOUND_EXCEPTION_MSG = "test not found exception message";
-    private static final String ID_PATH_VARIABLE_MISMATCH_MSG = "path variable 'id'=[841] should be equal to 'request.id'=[1707]";
+    private static final String ID_PATH_VARIABLE_MISMATCH_MSG = "path variable 'id'=[841] should be equal to 'templateId'=[1707]";
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
-    private Validator<CreateTemplateRequest> createTemplateRequestValidator;
+    private Validator<CreateTemplateCommand> createTemplateCommandValidator;
 
     @MockBean
-    private Validator<UpdateTemplateRequest> updateTemplateRequestValidator;
+    private Validator<UpdateTemplateCommand> updateTemplateCommandValidator;
 
     @MockBean
     private TemplateApiConverter converter;
 
     @MockBean
-    private TemplateService service;
+    private TemplateCommandService templateCommandService;
+
+    @MockBean
+    private TemplateQueryService templateQueryService;
 
     @Test
-    void given_createTemplateRequest_when_create_then_returnTemplateResponse() throws Exception {
-        final var createTemplateRequest = new CreateTemplateRequest(NAME_1, PAYLOAD_1);
+    void given_createTemplateCommand_when_create_then_returnTemplateResponse() throws Exception {
+        final var createTemplateCommand = new CreateTemplateCommand(NAME_1, PAYLOAD_1);
         final var templateDto = new TemplateDto(ID_1, NAME_1, PAYLOAD_1);
         final var templateResponse = new TemplateResponse(ID_1, NAME_1, PAYLOAD_1);
-        when(createTemplateRequestValidator.validate(refEq(createTemplateRequest))).thenReturn(success());
-        when(converter.convert(refEq(createTemplateRequest))).thenReturn(templateDto);
-        when(service.save(templateDto)).thenReturn(templateDto);
+        when(createTemplateCommandValidator.validate(createTemplateCommand)).thenReturn(success());
+        when(templateCommandService.create(createTemplateCommand)).thenReturn(templateDto);
         when(converter.convert(templateDto)).thenReturn(templateResponse);
 
         mockMvc
                 .perform(post(CREATE_PATH)
                         .contentType(APPLICATION_JSON)
-                        .content(CREATE_TEMPLATE_REQUEST_JSON))
+                        .content(CREATE_TEMPLATE_COMMAND_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(content().json(TEMPLATE_RESPONSE_JSON));
     }
 
     @Test
-    void given_nonValidCreateTemplateRequest_when_create_then_returnBadRequest() throws Exception {
-        final var createTemplateRequest = new CreateTemplateRequest(NAME_1, PAYLOAD_1);
-        when(createTemplateRequestValidator.validate(refEq(createTemplateRequest))).thenReturn(
+    void given_nonValidCreateTemplateCommand_when_create_then_returnBadRequest() throws Exception {
+        final var createTemplateCommand = new CreateTemplateCommand(NAME_1, PAYLOAD_1);
+        when(createTemplateCommandValidator.validate(refEq(createTemplateCommand))).thenReturn(
                 failure(of(VALIDATION_ERROR)));
 
         mockMvc
                 .perform(post(CREATE_PATH)
                         .contentType(APPLICATION_JSON)
-                        .content(CREATE_TEMPLATE_REQUEST_JSON))
+                        .content(CREATE_TEMPLATE_COMMAND_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(VALIDATION_ERROR));
     }
@@ -142,7 +146,7 @@ class TemplateControllerTest {
     void given_id_when_getById_then_returnTemplateResponse() throws Exception {
         final var templateDto = new TemplateDto(ID_1, NAME_1, PAYLOAD_1);
         final var templateResponse = new TemplateResponse(ID_1, NAME_1, PAYLOAD_1);
-        when(service.findById(ID_1)).thenReturn(templateDto);
+        when(templateQueryService.findById(ID_1)).thenReturn(templateDto);
         when(converter.convert(templateDto)).thenReturn(templateResponse);
 
         mockMvc
@@ -153,7 +157,7 @@ class TemplateControllerTest {
 
     @Test
     void given_id_when_getById_then_returnNotFound() throws Exception {
-        when(service.findById(ID_1)).thenThrow(new NotFoundException(NOT_FOUND_EXCEPTION_MSG));
+        when(templateQueryService.findById(ID_1)).thenThrow(new NotFoundException(NOT_FOUND_EXCEPTION_MSG));
 
         mockMvc
                 .perform(get(GET_BY_ID_PATH))
@@ -167,7 +171,7 @@ class TemplateControllerTest {
         final var templateDto2 = new TemplateDto(ID_2, NAME_2, PAYLOAD_2);
         final var templateResponse1 = new TemplateResponse(ID_1, NAME_1, PAYLOAD_1);
         final var templateResponse2 = new TemplateResponse(ID_2, NAME_2, PAYLOAD_2);
-        when(service.findAll()).thenReturn(of(templateDto1, templateDto2));
+        when(templateQueryService.findAll()).thenReturn(of(templateDto1, templateDto2));
         when(converter.convert(templateDto1)).thenReturn(templateResponse1);
         when(converter.convert(templateDto2)).thenReturn(templateResponse2);
 
@@ -178,55 +182,55 @@ class TemplateControllerTest {
     }
 
     @Test
-    void given_updateTemplateRequest_when_update_then_returnTemplateResponse() throws Exception {
-        final var updateTemplateRequest = new UpdateTemplateRequest(ID_1, NAME_1, PAYLOAD_1);
+    void given_updateTemplateCommand_when_update_then_returnTemplateResponse() throws Exception {
+        final var updateTemplateCommand = new UpdateTemplateCommand(ID_1, NAME_1, PAYLOAD_1);
         final var templateDto = new TemplateDto(ID_1, NAME_1, PAYLOAD_1);
         final var templateResponse = new TemplateResponse(ID_1, NAME_1, PAYLOAD_1);
-        when(updateTemplateRequestValidator.validate(refEq(updateTemplateRequest))).thenReturn(success());
-        when(converter.convert(refEq(updateTemplateRequest))).thenReturn(templateDto);
-        when(service.save(templateDto)).thenReturn(templateDto);
+        when(updateTemplateCommandValidator.validate(updateTemplateCommand)).thenReturn(success());
+        when(templateCommandService.update(updateTemplateCommand)).thenReturn(templateDto);
         when(converter.convert(templateDto)).thenReturn(templateResponse);
 
         mockMvc
                 .perform(put(UPDATE_PATH)
                         .contentType(APPLICATION_JSON)
-                        .content(UPDATE_TEMPLATE_REQUEST_JSON))
+                        .content(UPDATE_TEMPLATE_COMMAND_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(TEMPLATE_RESPONSE_JSON));
     }
 
     @Test
     void given_nonValidUpdateTemplateRequest_when_update_then_returnBadRequest() throws Exception {
-        final var updateTemplateRequest = new UpdateTemplateRequest(ID_1, NAME_1, PAYLOAD_1);
-        when(updateTemplateRequestValidator.validate(refEq(updateTemplateRequest))).thenReturn(
+        final var updateTemplateCommand = new UpdateTemplateCommand(ID_1, NAME_1, PAYLOAD_1);
+        when(updateTemplateCommandValidator.validate(refEq(updateTemplateCommand))).thenReturn(
                 failure(of(VALIDATION_ERROR)));
 
         mockMvc
                 .perform(put(UPDATE_PATH)
                         .contentType(APPLICATION_JSON)
-                        .content(UPDATE_TEMPLATE_REQUEST_JSON))
+                        .content(UPDATE_TEMPLATE_COMMAND_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(VALIDATION_ERROR));
     }
 
     @Test
-    void given_updateTemplateRequest_when_update_then_returnBadRequest() throws Exception {
-        final var updateTemplateRequest = new UpdateTemplateRequest(ID_1, NAME_1, PAYLOAD_1);
-        when(updateTemplateRequestValidator.validate(refEq(updateTemplateRequest))).thenReturn(success());
+    void given_updateTemplateCommand_when_update_then_returnBadRequest() throws Exception {
+        final var updateTemplateRequest = new UpdateTemplateCommand(ID_1, NAME_1, PAYLOAD_1);
+        when(updateTemplateCommandValidator.validate(refEq(updateTemplateRequest))).thenReturn(success());
 
         mockMvc
                 .perform(put(UPDATE_PATH_ID_MISMATCH)
                         .contentType(APPLICATION_JSON)
-                        .content(UPDATE_TEMPLATE_REQUEST_JSON))
+                        .content(UPDATE_TEMPLATE_COMMAND_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(ID_PATH_VARIABLE_MISMATCH_MSG));
     }
 
     @Test
     void given_id_when_deleteById_then_delete() throws Exception {
+        final var deleteTemplateCommand = new DeleteTemplateCommand(ID_1);
         doNothing()
-                .when(service)
-                .deleteById(ID_1);
+                .when(templateCommandService)
+                .delete(deleteTemplateCommand);
 
         mockMvc
                 .perform(delete(DELETE_BY_ID_PATH))
@@ -239,7 +243,7 @@ class TemplateControllerTest {
         final var templateDto2 = new TemplateDto(ID_2, NAME_2, PAYLOAD_2);
         final var templateResponse1 = new TemplateResponse(ID_1, NAME_1, PAYLOAD_1);
         final var templateResponse2 = new TemplateResponse(ID_2, NAME_2, PAYLOAD_2);
-        when(service.findAllByNamePattern(NAME_PATTERN)).thenReturn(of(templateDto1, templateDto2));
+        when(templateQueryService.findAllByNamePattern(NAME_PATTERN)).thenReturn(of(templateDto1, templateDto2));
         when(converter.convert(templateDto1)).thenReturn(templateResponse1);
         when(converter.convert(templateDto2)).thenReturn(templateResponse2);
 
