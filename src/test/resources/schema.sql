@@ -1,6 +1,6 @@
 DROP TABLE IF EXISTS template_events;
-DROP TABLE IF EXISTS templates;
 DROP TABLE IF EXISTS placeholder_keys;
+DROP TABLE IF EXISTS templates;
 
 DROP SEQUENCE IF EXISTS template_events_id_seq;
 DROP SEQUENCE IF EXISTS templates_id_seq;
