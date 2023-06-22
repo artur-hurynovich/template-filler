@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: ../
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL_ENV: jdbc:postgresql://db:5432/template-filler
+      SPRING_DATASOURCE_USERNAME_ENV: postgres
+      SPRING_DATASOURCE_PASSWORD_ENV: postgres
+    depends_on:
+      - db
+  db:
+    image: postgres
+    environment:
+      POSTGRES_DB: template-filler
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - ./sql/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql

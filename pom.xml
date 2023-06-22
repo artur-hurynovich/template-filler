@@ -43,7 +43,7 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.hibernate</groupId>
+			<groupId>org.hibernate.orm</groupId>
 			<artifactId>hibernate-jpamodelgen</artifactId>
 			<version>${hibernate-jpamodelgen.version}</version>
 		</dependency>
@@ -75,6 +75,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>template-filler</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
